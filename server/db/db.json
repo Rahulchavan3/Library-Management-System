@@ -1,0 +1,172 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "john_doe",
+      "email": "john@example.com",
+      "password": "$2b$10$examplehashedpassword",
+      "role": "MEMBER"
+    },
+    {
+      "id": "2",
+      "username": "jane_doe",
+      "email": "jane@example.com",
+      "password": "$2b$10$hashedpasswordoftheuser",
+      "role": "MEMBER"
+    },
+    {
+      "id": "3",
+      "username": "Sam",
+      "email": "sam@gmail.com",
+      "password": "$2b$10$70bMTSckcXtpiKdzGtyq5ewnZYg9hiIOSHVuavD6xS5ZyYBkqDBMe",
+      "role": "MEMBER",
+      "isDeleted": true
+    },
+    {
+      "id": "fe21",
+      "username": "rahul",
+      "email": "rahul@gmail.com",
+      "password": "$2b$10$/aKIh4HhSpfeLIYtigoZ7uuZc9527eJt1zA00GNdBJf2/R1QzKYye",
+      "role": "LIBRARIAN",
+      "isDeleted": true
+    },
+    {
+      "id": "3973",
+      "username": "admin",
+      "email": "admin@gmail.com",
+      "password": "$2b$10$erkbo8pUizm1PhcClIPP4O3vrNfgVEiFlf07t5kIteLMyx8.6fjGy",
+      "role": "LIBRARIAN",
+      "isDeleted": false
+    },
+    {
+      "id": "3f08",
+      "username": "kunal",
+      "email": "kunal@gmail.com",
+      "password": "kunal123",
+      "role": "MEMBER",
+      "isDeleted": false
+    },
+    {
+      "id": "37e0",
+      "username": "sam89",
+      "email": "sam89@gmail.com",
+      "password": "$2b$10$BuoRUQfB3Zp4LR6d4CnxzOIf2FZRlut93/mT2qRPMIzfKn9NfBtU.",
+      "role": "MEMBER",
+      "isDeleted": true
+    },
+    {
+      "id": "a976",
+      "username": "Deepak",
+      "email": "Deepak@gmail.com",
+      "password": "$2b$10$IyZ/TQhjLzGw3yFcX4dI5OxFUvjcjxh2EwajrzPC.BQ6ROW.DKwQK",
+      "role": "MEMBER",
+      "isDeleted": false
+    },
+    {
+      "id": "7338",
+      "username": "arun",
+      "email": "arun@gmail.com",
+      "password": "$2b$10$Ko2spa2GKRg7Ex2D.3xeN.lSRUiUCdh8HEpYnARWlUeONYOKW60DS",
+      "role": "LIBRARIAN",
+      "isDeleted": false
+    },
+    {
+      "id": "9839",
+      "username": "sujal",
+      "email": "sujal123@gmail.com",
+      "password": "sujal123",
+      "role": "MEMBER",
+      "isDeleted": true
+    },
+    {
+      "id": "4bff",
+      "username": "sujal",
+      "email": "sujal@gmail.com",
+      "password": "$2b$10$RecWGHOY4gpSkTpGTC7R3uAyJcbLeg2Bqn7QT2SKWdNp6BReL.U12",
+      "role": "LIBRARIAN",
+      "isDeleted": true
+    },
+    {
+      "id": "6714",
+      "username": "sanjay",
+      "email": "sanjay@gmail.com",
+      "password": "$2b$10$fBiILKWmsWJjszEJ2iBEjON.KYeifUSo6iKqkXIvzb1USO/hAoVBi",
+      "role": "MEMBER",
+      "isDeleted": true
+    }
+  ],
+  "books": [
+    {
+      "id": "1",
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee",
+      "published_year": 1960,
+      "available_copies": 5
+    },
+    {
+      "id": "2",
+      "title": "The Catcher in the Rye",
+      "author": "J.D. Salinger",
+      "published_year": "2020",
+      "available_copies": "9"
+    },
+    {
+      "id": "3",
+      "title": "The Grapes of Wrath",
+      "author": "John Steinbeck",
+      "published_year": 1939,
+      "available_copies": 3
+    },
+    {
+      "id": "4",
+      "title": "The Help",
+      "author": "Kathryn Stockett",
+      "published_year": 2009,
+      "available_copies": 9
+    },
+    {
+      "id": "5",
+      "title": "A Lesson Before Dying",
+      "author": "Ernest J. Gaines",
+      "published_year": 1993,
+      "available_copies": 6
+    },
+    {
+      "id": "6",
+      "title": "Of Mice and Men",
+      "author": "John Steinbeck",
+      "published_year": 1937,
+      "available_copies": 3
+    }
+  ],
+  "loans": [
+    {
+      "id": "0fd2",
+      "user_id": "fe21",
+      "book_id": "1",
+      "loan_date": "2024-10-09",
+      "return_date": "2024-10-09"
+    },
+    {
+      "id": "2490",
+      "user_id": "fe21",
+      "book_id": "2",
+      "loan_date": "2024-10-09",
+      "return_date": "2024-10-09"
+    },
+    {
+      "id": "f488",
+      "user_id": "fe21",
+      "book_id": "3",
+      "loan_date": "2024-10-09",
+      "return_date": null
+    },
+    {
+      "id": "45a4",
+      "user_id": "fe21",
+      "book_id": "4",
+      "loan_date": "2024-10-09",
+      "return_date": null
+    }
+  ]
+}

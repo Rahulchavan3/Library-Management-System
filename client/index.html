@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Library Management System Dashboard</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f0f4f8; 
+        }
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+.dashboard {
+    max-width: 800px;
+    width: 100%;
+    background-color: #ffffff; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+    padding: 20px; 
+}
+
+.hidden {
+    display: none;
+}
+
+.user-info {
+    display: flex;                   
+    justify-content: space-between; 
+    align-items: center;            
+    padding: 15px;                 
+    background-color: #f9f9f9;     
+    border: 1px solid #e1e1e1;      
+    border-radius: 8px;             
+    margin-bottom: 20px;            
+}
+
+.user-name, .user-role {
+    font-size: 16px;                
+    color: #333;                  
+}
+
+.user-name strong, .user-role strong {
+    color: #007bff;                 
+}
+h2, h3 {
+    color: #333; 
+    margin-bottom: 10px; 
+}
+
+.button-group {
+    margin-bottom: 20px; 
+}
+
+.btn {
+    padding: 10px 15px;
+    margin: 5px;
+    background-color: #007bff; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px); 
+}
+
+.section {
+    margin-bottom: 30px;
+}
+
+.form-section {
+    display: none;
+    margin-top: 20px;
+    padding: 15px; 
+    border: 1px solid #e1e1e1; 
+    border-radius: 8px; 
+}
+
+.form-section h4 {
+    margin-bottom: 10px; 
+}
+
+form input {
+    padding: 10px;
+    width: calc(100% - 22px);
+    margin-bottom: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px;
+}
+
+.books-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px; 
+    margin-top: 20px;
+}
+
+.book-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.book-card:hover {
+    transform: scale(1.05); 
+}
+
+.feedback-message {
+    display: none; 
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9; 
+    color: #333; 
+}
+
+.feedback-message p {
+    margin: 0; 
+}
+
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7); 
+    z-index: 1000; 
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    margin: auto;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.confirm-delete, .cancel-delete {
+    margin: 10px;
+    padding: 10px 20px;
+}
+
+.btn {
+    cursor: pointer;
+}
+
+.members-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.member-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 10px;
+    background-color: #f9f9f9;
+}
+
+h3 {
+    margin-bottom: 10px;
+}
+
+
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="dashboard">
+           
+            <div id="feedbackMessage" class="feedback-message"></div>
+    
+           
+            <div id="librarian-dashboard" class="hidden dashboard-container">
+                <h2>Librarian Dashboard</h2>
+                <button class="btn" onclick="logout()" >Logout</button>
+
+                <div class="section">
+                    <h3>Manage Books</h3>
+                    <div class="button-group">
+                        <button class="btn" onClick="showAddBookForm()">Add New Book</button>
+                        <button class="btn" onClick="showUpdateBookForm()">Update Book</button>
+                        <button class="btn" onClick="showDeleteBookForm()">Delete Book</button>
+                        <button class="btn" onClick="getBooksLibrarian()">View Available Books</button>
+                        
+                    </div>
+    
+                   
+                    <div id="addBookForm" class="form-section">
+                        <h4>Add New Book</h4>
+                        <form onSubmit="submitAddBookForm(event)">
+                            <input type="text" id="bookTitle" placeholder="Book Title" required>
+                            <input type="text" id="bookAuthor" placeholder="Author" required>
+                            <input type="number" id="publishedYear" placeholder="Published Year" required>
+                            <input type="number" id="availableCopies" placeholder="Available Copies" required>
+                            <button type="submit" class="btn">Add Book</button>
+                        </form>
+                    </div>
+                    <div id="librarianbooksContainer" class="books-container"></div>
+                    <div id="updateBookForm" class="form-section">
+                        <h4>Update Book</h4>
+                        <form onSubmit="submitUpdateBookForm(event)">
+                            <input type="text" id="bookIdToUpdate" placeholder="Book ID" required>
+                            <input type="text" id="newBookTitle" placeholder="New Title (Optional)">
+                            <input type="text" id="newBookAuthor" placeholder="New Author (Optional)">
+                            <input type="number" id="newPublishedYear" placeholder="New Published Year (Optional)">
+                            <input type="number" id="newAvailableCopies" placeholder="New Available Copies (Optional)">
+                            <button type="submit" class="btn">Update Book</button>
+                        </form>
+                    </div>
+    
+                    <div id="deleteBookForm" class="form-section">
+                        <h4>Delete Book</h4>
+                        <form onSubmit="submitDeleteBookForm(event)">
+                            <input type="text" id="bookIdToDelete" placeholder="Book ID" required>
+                            <button type="submit" class="btn">Delete Book</button>
+                        </form>
+                    </div>
+                </div>
+    
+                <div class="section">
+                    <h3>Manage Members</h3>
+                    <div class="button-group">
+                        <button class="btn" onClick="showAddMemberForm()">Add New Member</button>
+                        <button class="btn" onClick="showUpdateMemberForm()">Update Member</button>
+                        <button class="btn" onClick="showDeleteMemberForm()">Delete Member</button>
+                        <button class="btn" onClick="viewAllMembers()">View Members</button>
+                        <button class="btn" onclick="viewAllMembersBorrowHistory()">View All Members Borrow History</button>
+                        <button class="btn" onclick="viewActiveAndDeletedMembers()">View All Active and Deleted Members</button>
+                    </div>
+    
+                  
+                    <div id="addMemberForm" class="form-section">
+                        <h4>Add New Member</h4>
+                        <form onSubmit="submitAddMemberForm(event)">
+                            <input type="text" id="newUsername" placeholder="Username" required>
+                            <input type="email" id="newEmail" placeholder="Email" required>
+                            <input type="password" id="newPassword" placeholder="Password" required>
+                            <select id="memberRole" required>
+                                <option value="MEMBER">MEMBER</option>
+                                <option value="LIBRARIAN">LIBRARIAN</option>
+                            </select>
+                            <button type="submit" class="btn">Add Member</button>
+                        </form>
+                    </div>
+                    
+                    <div id="userContainer" class="books-container"></div>
+
+                    <div id="borrowContainer" class="books-container"></div>
+
+                    <div id="membersContainer" class="members-container"></div>
+
+
+                    <div id="updateMemberForm" class="form-section">
+                        <h4>Update Member</h4>
+                        <form onSubmit="submitUpdateMemberForm(event)">
+                            <input type="text" id="memberIdToUpdate" placeholder="Member ID" required>
+                            <input type="text" id="newUsernameForMember" placeholder="New Username (Optional)">
+                            <input type="text" id="newEmailForMember" placeholder="New Email (Optional)">
+                            <select id="memberRole" >
+                                <option value="MEMBER">MEMBER</option>
+                                <option value="LIBRARIAN">LIBRARIAN</option>
+                            </select>
+                            <button type="submit" class="btn">Update Member</button>
+                        </form>
+                    </div>
+    
+                    <div id="deleteMemberForm" class="form-section">
+                        <h4>Delete Member</h4>
+                        <form onSubmit="submitDeleteMemberForm(event)">
+                            <input type="text" id="memberIdToDelete" placeholder="Member ID" required>
+                            <button type="submit" class="btn">Delete Member</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    
+
+            <div id="member-dashboard" class="dashboard-container hidden">
+                <h2 class="dashboard-title">Member Dashboard</h2>
+                
+
+                <div class="user-info">
+                    <span class="user-name">Welcome, <strong id="userName">`Guest</strong></span>
+                    <span class="user-role">Role: <strong id="userRole">MEMBER`</strong></span>
+                    <button class="btn logout-btn" onClick="logout()">Logout</button>
+
+                </div>
+            
+
+                <div class="section books-section">
+                    <h3>Books</h3>
+                    <div class="button-group">
+                        <button class="btn" onClick="viewBooks()">View Available Books</button>
+                        <button class="btn" onClick="showBorrowBookForm()">Borrow Book</button>
+                        <button class="btn" onClick="showReturnBookForm()">Return Book</button>
+                        <button class="btn" onClick="getBorrowHistory()">View Borrowing History</button>
+                    </div>
+            
+
+                    <div id="booksContainer" class="books-container"></div>
+            
+                   
+                    <div id="borrowBookForm" class="form-section">
+                        <h4>Borrow Book</h4>
+                        <form onSubmit="submitBorrowBookForm(event)">
+                            <input type="text" id="bookIdToBorrow" placeholder="Book ID" required>
+                            <button type="submit" class="btn">Borrow</button>
+                        </form>
+                    </div>
+            
+                    <div id="returnBookForm" class="form-section">
+                        <h4>Return Book</h4>
+                        <form onSubmit="submitReturnBookForm(event)">
+                            <input type="text" id="loanIdToReturn" placeholder="Loan ID" required>
+                            <button type="submit" class="btn">Return Book</button>
+                        </form>
+                    </div>
+                </div>
+                
+                
+                
+                <div class="section history-section">
+                    <h3>Borrowing History</h3>
+                    <div id="historyContainer" class="books-container"></div> 
+                </div>
+
+                <div class="section account-section">
+                    <h3>Account</h3>
+                    <button class="btn" onClick="confirmDeleteAccount()">Delete My Account</button>
+                </div>
+
+              
+                <div id="deleteAccountModal" class="modal hidden">
+                    <div class="modal-content">
+                        <h4>Confirm Account Deletion</h4>
+                        <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                        <button class="btn confirm-delete" onClick="deleteMyAccount()">Yes, Delete My Account</button>
+                        <button class="btn cancel-delete" onClick="closeModal()">Cancel</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+        const API_URL="http://localhost:8080";
+
+        const token = localStorage.getItem('jwtToken');
+
+            
+            if (!token) {
+                window.location.href = 'login.html';
+            }
+        
+        
+        const userRole = localStorage.getItem('role'); 
+
+
+        function setUserInfo() {
+
+            const userName = localStorage.getItem('name'); 
+            const userRole = localStorage.getItem('role'); 
+
+
+            if (userName) {
+                document.getElementById('userName').textContent = userName; 
+            } else {
+                document.getElementById('userName').textContent = 'Guest'; 
+            }
+
+            if (userRole) {
+                document.getElementById('userRole').textContent = userRole; 
+            } else {
+                document.getElementById('userRole').textContent = 'MEMBER'; 
+            }
+        }
+        function logout() {
+
+            localStorage.removeItem('name');
+            localStorage.removeItem('role');
+            localStorage.removeItem('email');
+            localStorage.removeItem('jwtToken');
+
+            
+            window.location.href = 'login.html'; 
+        }
+
+document.addEventListener('DOMContentLoaded', setUserInfo);
+
+
+
+        if (userRole === 'LIBRARIAN') {
+            document.getElementById('librarian-dashboard').classList.remove('hidden');
+        } else if (userRole === 'MEMBER') {
+            document.getElementById('member-dashboard').classList.remove('hidden');
+        }
+
+
+        function showFeedbackMessage(message) {
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            feedbackMessage.innerHTML = `<p>${message}</p>`;
+            feedbackMessage.style.display = 'block'; 
+            setTimeout(() => {
+                feedbackMessage.style.display = 'none'; 
+            }, 2000);
+        }
+
+        function showAddBookForm() {
+            toggleForms('addBookForm');
+        }
+
+        function submitAddBookForm(event) {
+            event.preventDefault();
+
+         
+            const token = localStorage.getItem('jwtToken');
+            const role = localStorage.getItem('role');
+            if (!token) {
+                showFeedbackMessage('Please log in to add books.');
+                return;
+            }
+           
+            if (role !== 'LIBRARIAN') {
+                showFeedbackMessage('Only librarians can add books.');
+                return;
+            }
+
+         
+            const title = document.getElementById('bookTitle').value;
+            const author = document.getElementById('bookAuthor').value;
+            const published_year = document.getElementById('publishedYear').value;
+            const available_copies = document.getElementById('availableCopies').value;
+
+            axios.post(`${API_URL}/api/Addbooks`, {
+                title,
+                author,
+                published_year,
+                available_copies
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            })
+            .then(response => {
+                showFeedbackMessage('Book added successfully!');
+                document.getElementById('addBookForm').reset();
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to add book.');
+            });
+        }
+
+        function getBooksLibrarian() {
+            const token = localStorage.getItem('jwtToken');
+
+            if (!token) {
+                showFeedbackMessage('Please log in to view books.');
+                return;
+            }
+            axios.get(`${API_URL}/api/books`, {
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            })
+            .then(response => {
+                const librarianbooksContainer = document.getElementById('librarianbooksContainer');
+                librarianbooksContainer.innerHTML = ''; 
+                console.log(response.data);
+                response.data.forEach(book => {
+                    const bookCard = document.createElement('div');
+                    bookCard.className = 'book-card';
+                    bookCard.innerHTML = `<h4>Book Id: ${book.id}</h4><h4>${book.title}</h4><p>Author: ${book.author}</p><p>Published Year: ${book.published_year}</p><p>Available Copies: ${book.available_copies}</p>`;
+                    librarianbooksContainer.appendChild(bookCard);
+                });
+                showFeedbackMessage('Book Loaded Successfully!');
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to load books.');
+            });
+        }
+
+
+        function showUpdateBookForm() {
+            toggleForms('updateBookForm');
+        }
+
+        function submitUpdateBookForm(event) {
+        event.preventDefault(); 
+        
+        const bookId = document.getElementById('bookIdToUpdate').value; 
+        const newTitle = document.getElementById('newBookTitle').value; 
+        const newAuthor = document.getElementById('newBookAuthor').value; 
+        const newAvailableCopies = document.getElementById('newAvailableCopies').value; 
+        const newPublishedYear = document.getElementById('newPublishedYear').value; 
+
+
+        const updateData = {};
+        if (newTitle) updateData.title = newTitle; 
+        if (newAuthor) updateData.author = newAuthor; 
+        if (newPublishedYear) updateData.published_year = newPublishedYear; 
+        if (newAvailableCopies) updateData.available_copies = newAvailableCopies; 
+        
+
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+                showFeedbackMessage('Please log in to update books.');
+                return;
+            }
+        
+        axios.put(`${API_URL}/api/books/${bookId}`, updateData, {
+            headers: {
+                'Authorization': `Bearer ${token}` 
+            }
+        })
+        .then(response => {
+            showFeedbackMessage('Book updated successfully!');
+            document.getElementById('updateBookForm').reset(); 
+        })
+        .catch(error => {
+            console.error(error);
+            showFeedbackMessage('Failed to update book.'); 
+        });
+    }
+
+
+        function showDeleteBookForm() {
+            toggleForms('deleteBookForm');
+        }
+
+        function submitDeleteBookForm(event) {
+            event.preventDefault();
+            const bookId = document.getElementById('bookIdToDelete').value;
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                showFeedbackMessage('Please log in to delete books.');
+                return;
+            }
+
+            axios.delete(`${API_URL}/api/books/${bookId}`,{
+            headers: {
+                'Authorization': `Bearer ${token}` 
+            }
+        })
+            .then(response => {
+                showFeedbackMessage('Book deleted successfully!');
+                document.getElementById('deleteBookForm').reset();
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to delete book.');
+            });
+        }
+
+        function showAddMemberForm() {
+            toggleForms('addMemberForm');
+        }
+
+        function submitAddMemberForm(event) {
+            event.preventDefault(); 
+            
+            const username = document.getElementById('newUsername').value; 
+            const email = document.getElementById('newEmail').value; 
+            const password = document.getElementById('newPassword').value; 
+            const role = document.getElementById('memberRole').value; 
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                showFeedbackMessage('Please log in to add members.');
+                return;
+            }
+            
+            axios.post(`${API_URL}/api/Addmembers`, {
+                username,
+                email,
+                password,
+                role 
+            },{
+            headers: {
+                'Authorization': `Bearer ${token}` 
+            }
+        })
+            .then(response => {
+                showFeedbackMessage('Member added successfully!'); 
+                document.getElementById('addMemberForm').reset(); 
+            })
+            .catch(error => {
+                console.error(error); 
+                showFeedbackMessage('Failed to add member.'); 
+            });
+        }
+
+        function viewAllMembers() {
+            const token = localStorage.getItem('jwtToken');
+
+            if (!token) {
+                showFeedbackMessage('Please log in to view Members.');
+                return;
+            }
+            axios.get(`${API_URL}/api/allMembers`, {
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            })
+            .then(response => {
+                const userContainer = document.getElementById('userContainer');
+                userContainer.innerHTML = ''; 
+                console.log(response.data);
+                response.data.forEach(user => {
+                    const userCard = document.createElement('div');
+                    userCard.className = 'book-card';
+                    userCard.innerHTML = `<h4>User Id: ${user.id}</h4><h4>Name : ${user.username}</h4><p>Email :  ${user.email}</p><p>Role: ${user.role}</p>`;
+                    userContainer.appendChild(userCard);
+                });
+                showFeedbackMessage('Members Loaded Successfully!');
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to load Members.');
+            });
+        }
+
+
+
+        function showUpdateMemberForm() {
+            toggleForms('updateMemberForm');
+        }
+
+        function submitUpdateMemberForm(event) {
+            event.preventDefault(); 
+            const token = localStorage.getItem('jwtToken');
+
+            if (!token) {
+                showFeedbackMessage('Please log in to update Members.');
+                return;
+            }
+
+            const memberId = document.getElementById('memberIdToUpdate').value;
+            const newUsername = document.getElementById('newUsernameForMember').value;
+            const newEmail = document.getElementById('newEmailForMember').value; 
+            const newRole = document.getElementById('memberRole').value; 
+
+
+            const updatedData = {};
+            if (newUsername) updatedData.username = newUsername; 
+            if (newEmail) updatedData.email = newEmail; 
+            if (newRole) updatedData.role = newRole; 
+
+            axios.patch(`${API_URL}/api/members/${memberId}`, updatedData,{
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            }) 
+                .then(response => {
+                    showFeedbackMessage('Member updated successfully!'); 
+                    document.getElementById('updateMemberForm').reset(); 
+                })
+                .catch(error => {
+                    console.error(error); 
+                    showFeedbackMessage('Failed to update member.'); 
+                });
+        }
+
+
+        function showDeleteMemberForm() {
+            toggleForms('deleteMemberForm');
+        }
+
+        function submitDeleteMemberForm(event) {
+            event.preventDefault();
+            const memberId = document.getElementById('memberIdToDelete').value;
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                showFeedbackMessage('Please log in to delete members.');
+                return;
+            }
+
+            axios.delete(`${API_URL}/api/members/delete/${memberId}`,{
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            }) 
+            .then(response => {
+                showFeedbackMessage('Member deleted successfully!');
+                document.getElementById('deleteMemberForm').reset();
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to delete member.');
+            });
+        }
+
+        function viewAllMembersBorrowHistory() {
+            const token = localStorage.getItem('jwtToken');
+
+            if (!token) {
+                showFeedbackMessage('Please log in to all  Members Borrow History.');
+                return;
+            }
+            axios.get(`${API_URL}/api/members/history`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                const borrowContainer = document.getElementById('borrowContainer');
+                borrowContainer.innerHTML = '';
+                console.log(response.data);
+                
+                response.data.forEach(borrow => {
+                    const borrowCard = document.createElement('div');
+                    borrowCard.className = 'book-card';
+                    borrowCard.innerHTML = `<h4>Loan Id: ${borrow.id}</h4>
+                    <h4>User Id : ${borrow.user_id}</h4>
+                    <p>Book Id :  ${borrow.book_id}</p>
+                    <p>Loan Date: ${new Date(borrow.loan_date).toLocaleDateString()}</p>
+                    <p>Return Date: ${new Date(borrow.return_date).toLocaleDateString()}</p>`;
+                    borrowContainer.appendChild(borrowCard);
+                });
+                showFeedbackMessage('Borrow History of All Members Loaded Successfully!');
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to load Borrow History of All Members.');
+            });
+        }
+
+        async function viewActiveAndDeletedMembers() {
+            try {
+                const token= localStorage.getItem('jwtToken');
+                if(!token){
+                    showFeedbackMessage('Please log in to view Active and Deleted Members.');
+                    return;
+                }
+                const response = await axios.get(`${API_URL}/api/members/status`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}` 
+                    }
+                });
+
+                const { activeMembers, deletedMembers } = response.data; 
+                displayMembers(activeMembers, deletedMembers); 
+
+            } catch (error) {
+                console.error(error);
+                showFeedbackMessage('Failed to retrieve members.');
+            }
+        }
+
+        function displayMembers(activeMembers, deletedMembers) {
+            const container = document.getElementById('membersContainer');
+            container.innerHTML = ''; 
+
+            
+            const activeSection = document.createElement('div');
+            activeSection.innerHTML = '<h3>Active Members</h3>';
+            activeMembers.forEach(member => {
+                const card = createMemberCard(member); 
+                activeSection.appendChild(card);
+            });
+
+            
+            const deletedSection = document.createElement('div');
+            deletedSection.innerHTML = '<h3>Deleted Members</h3>';
+            deletedMembers.forEach(member => {
+                const card = createMemberCard(member); 
+                deletedSection.appendChild(card);
+            });
+
+
+            container.appendChild(activeSection);
+            container.appendChild(deletedSection);
+        }
+
+
+        function createMemberCard(member) {
+            const card = document.createElement('div');
+            card.className = 'member-card';
+            card.innerHTML = `
+                <h4>Member ID: ${member.id}</h4>
+                <p>Username: ${member.username}</p>
+                <p>Email: ${member.email}</p>
+                <p>Status: ${member.isDeleted ? 'Deleted' : 'Active'}</p>
+            `;
+            return card;
+        }
+
+
+
+        function viewBooks() {
+            const token = localStorage.getItem('jwtToken');
+
+            if (!token) {
+                showFeedbackMessage('Please log in to view books.');
+                return;
+            }
+            axios.get(`${API_URL}/api/books`, {
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            })
+            .then(response => {
+                const booksContainer = document.getElementById('booksContainer');
+                booksContainer.innerHTML = ''; 
+                console.log(response.data);
+                response.data.forEach(book => {
+                    const bookCard = document.createElement('div');
+                    bookCard.className = 'book-card';
+                    bookCard.innerHTML = `<h4>Book Id: ${book.id}</h4><h4>${book.title}</h4><p>Author: ${book.author}</p><p>Published Year: ${book.published_year}</p><p>Available Copies: ${book.available_copies}</p>`;
+                    booksContainer.appendChild(bookCard);
+                });
+                showFeedbackMessage('Book Loaded Successfully!');
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to load books.');
+            });
+        }
+
+        function showBorrowBookForm() {
+            toggleForms('borrowBookForm');
+        }
+
+        function submitBorrowBookForm(event) {
+            event.preventDefault();
+            const bookId = document.getElementById('bookIdToBorrow').value;
+            const token = localStorage.getItem('jwtToken');
+
+            if (!token) {
+                showFeedbackMessage('Please log in to borrow books.');
+                return;
+            }
+            axios.post(`${API_URL}/api/borrow`, { bookId }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    showFeedbackMessage('Book borrowed successfully!');
+                    document.getElementById('borrowBookForm').reset();
+                })
+                .catch(error => {
+                    console.error('Error borrowing book:', error);
+                    showFeedbackMessage('Failed to borrow book. ' + (error.response?.data?.message || ''));
+                });
+        }
+
+
+        function showReturnBookForm() {
+            toggleForms('returnBookForm');
+        }
+
+        function submitReturnBookForm(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('jwtToken');
+
+            if (!token) {
+                showFeedbackMessage('Please log in to return books.');
+                return;
+            }
+            const loanId = document.getElementById('loanIdToReturn').value;
+
+            axios.post(`${API_URL}/api/return`, { loanId },{
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            })
+            .then(response => {
+                showFeedbackMessage('Book returned successfully!');
+                document.getElementById('returnBookForm').reset();
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to return book.');
+            });
+        }
+
+
+        function confirmDeleteAccount() {
+            document.getElementById('deleteAccountModal').classList.remove('hidden'); 
+        }
+
+
+        function closeModal() {
+            document.getElementById('deleteAccountModal').classList.add('hidden');
+        }
+
+
+        function deleteMyAccount(event) {
+            const token = localStorage.getItem('jwtToken')
+            if (!token) {
+                showFeedbackMessage('Please log in to delete Account.');
+                return;
+            }
+
+            const userId = localStorage.getItem('userId'); 
+
+            axios.delete(`${API_URL}/api/account`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                showFeedbackMessage('Account deleted successfully!');
+                
+                localStorage.removeItem('name');
+                localStorage.removeItem('role');
+                localStorage.removeItem('email');
+                localStorage.removeItem('jwtToken'); 
+                window.location.href = 'login.html';
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to delete account.');
+            });
+
+            closeModal(); 
+        }
+
+
+
+        function getBorrowHistory() {
+            const userId = localStorage.getItem('userId'); 
+            const token = localStorage.getItem('jwtToken'); 
+
+            axios.get(`${API_URL}/api/history`, {
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            })
+            .then(response => {
+                const historyContainer = document.getElementById('historyContainer');
+                historyContainer.innerHTML = '';
+
+                if (response.data.length === 0) {
+                    historyContainer.innerHTML = '<p>No borrowing history found.</p>'; 
+                    return;
+                }
+
+                response.data.forEach(loan => {
+                   
+                    const loanCard = document.createElement('div');
+                    loanCard.className = 'book-card'; 
+                    loanCard.innerHTML = `
+                        <h4>Loan ID: ${loan.id}</h4>
+                        <p>Book ID: ${loan.book_id}</p> <!-- Displaying Book ID, adjust if you have book title -->
+                        <p>Loan Date: ${new Date(loan.loan_date).toLocaleDateString()}</p>
+                        <p>Return Date: ${loan.return_date ? new Date(loan.return_date).toLocaleDateString() : 'Not Returned'}</p>
+                    `;
+                    historyContainer.appendChild(loanCard);
+                });
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to fetch borrowing history.');
+            });
+        }
+
+
+        function showDeleteAccountForm() {
+            toggleForms('deleteAccountForm');
+        }
+
+        function submitDeleteAccountForm(event) {
+            event.preventDefault();
+            const userId = localStorage.getItem('userId'); 
+
+            axios.delete(`${API_URL}/members/${userId}`)
+            .then(response => {
+                showFeedbackMessage('Account deleted successfully!');
+               
+            })
+            .catch(error => {
+                console.error(error);
+                showFeedbackMessage('Failed to delete account.');
+            });
+        }
+
+
+        function toggleForms(formId) {
+            const forms = document.querySelectorAll('.form-section');
+            forms.forEach(form => {
+                form.style.display = 'none'; 
+            });
+            document.getElementById(formId).style.display = 'block'; 
+        }
+    </script>
+</body>
+</html>
