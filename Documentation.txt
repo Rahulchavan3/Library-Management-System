@@ -1,0 +1,68 @@
+Library Management System Documentation
+
+Table of Contents
+1.Project Overview
+2.Technologies Used
+3.Architecture
+4.Design Choices
+5.File Structure
+6.Deployment
+
+1.Project Overview
+The Library Management System is a web application that helps manage library users. It includes features for user registration, login, and viewing both active and deleted members. The system uses a client-server architecture, where the client provides the user interface and the server handles data processing and storage.
+
+2.Technologies Used
+1.Frontend:
+•	HTML
+•	CSS
+•	JavaScript
+•	Axios (for API requests)
+2.Backend:
+•	Node.js
+•	Express.js
+•	JSON Server (for mock REST API)
+•	Bcrypt (for password hashing)
+3.Database:
+•	JSON file (db.json)
+
+3.Architecture
+The application follows a Client-Server architecture:
+•	The client (static files) communicates with the server (REST API) for user authentication and data management.
+•	The server exposes endpoints for user registration, login, and member management.
+
+4.Design Choices
+•	Separation of Concerns:
+The project separates the frontend and backend, making it easier to maintain and scale. The client focuses on user interactions, while the server manages business logic and data storage.
+•	RESTful API Design:
+The server provides clear RESTful API endpoints for CRUD operations, such as /auth/login and /api/members, following best practices.
+•	Security:
+User passwords are securely stored using Bcrypt, and JWT tokens are used for safe authentication between the client and server.
+•	Mock Database:
+A JSON Server is used during development to mimic a database, allowing for quick setup and easy testing.
+•	CORS Implementation:
+Cross-Origin Resource Sharing (CORS) is enabled on the server to allow secure requests from the client.
+.
+5.File Structure
+/library-management-system
+│
+├── /client
+│   ├── index.html
+│   ├── login.html
+│   ├── register.html
+│
+└── /server
+    ├── /db
+    │   ├── db.json
+    │   └── server.js
+    ├── /Routes
+    │   ├── AuthRoute.js
+    │   └── activityRoutes.js
+    ├── index.js
+    └── .env
+
+6.Deployment
+Backend Deployment:
+•	The Node.js server is deployed on Render, allowing for handling REST API requests.
+•	JSON Server is also hosted on Render to serve the db.json file.
+Frontend Deployment:
+•	The static files are deployed on Render as well, allowing users to access the client interface.
